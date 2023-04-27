@@ -95,6 +95,26 @@ public abstract class PoolBase : StratumServer,
         return null;
     }
 
+    protected decimal? GetMinPayoutFromPassparts(string[] parts)
+    {
+        if(parts == null || parts.Length == 0)
+            return null;
+
+        foreach(var part in parts)
+        {
+            var m = regexMinPayout.Match(part);
+
+            if(m.Success)
+            {
+                var str = m.Groups[1].Value.Trim();
+                if(decimal.TryParse(str, NumberStyles.Float, CultureInfo.InvariantCulture, out var diff))
+                    return diff;
+            }
+        }
+
+        return null;
+    }
+
     protected override void OnConnect(StratumConnection connection, IPEndPoint ipEndPoint)
     {
         // setup context
@@ -342,7 +362,7 @@ public abstract class PoolBase : StratumServer,
     private void LogPoolInfo()
     {
         logger.Info(() => "Pool Online");
-
+try {
         var msg = $@"
 
 Mining Pool:            {poolConfig.Id}
@@ -358,6 +378,9 @@ Pool Fee:               {(poolConfig.RewardRecipients?.Any() == true ? poolConfi
 ";
 
         logger.Info(() => msg);
+} catch (Exception ex) {
+
+}
     }
 
     #region API-Surface
