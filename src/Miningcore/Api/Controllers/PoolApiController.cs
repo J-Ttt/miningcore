@@ -50,7 +50,7 @@ public class PoolApiController : ApiControllerBase
     #region Actions
 
     [HttpGet]
-    public async Task<GetPoolsResponse> Get(CancellationToken ct, [FromQuery] uint topMinersRange = 24)
+    public async Task<GetPoolsResponse> Get(CancellationToken ct)
     {
         var response = new GetPoolsResponse
         {
@@ -68,17 +68,9 @@ public class PoolApiController : ApiControllerBase
                 // enrich
                 result.TotalPaid = await cf.Run(con => statsRepo.GetTotalPoolPaymentsAsync(con, config.Id, ct));
                 result.TotalBlocks = await cf.Run(con => blocksRepo.GetPoolBlockCountAsync(con, config.Id, ct));
-                var lastBlockTime = await cf.Run(con => blocksRepo.GetLastPoolBlockTimeAsync(con, config.Id));
-                result.LastPoolBlockTime = lastBlockTime;
+                result.LastPoolBlockTime = await cf.Run(con => blocksRepo.GetLastPoolBlockTimeAsync(con, config.Id));
 
-                if(lastBlockTime.HasValue)
-                {
-                    DateTime startTime = lastBlockTime.Value;
-                    var poolEffort = await cf.Run(con => shareRepo.GetEffortBetweenCreatedAsync(con, config.Id, pool.ShareMultiplier, startTime, clock.Now));
-                    result.PoolEffort = poolEffort.Value;
-                }
-
-                var from = clock.Now.AddHours(-topMinersRange);
+                var from = clock.Now.AddDays(-1);
 
                 var minersByHashrate = await cf.Run(con => statsRepo.PagePoolMinersByHashrateAsync(con, config.Id, from, 0, 15, ct));
 
@@ -118,7 +110,7 @@ public class PoolApiController : ApiControllerBase
     }
 
     [HttpGet("{poolId}")]
-    public async Task<GetPoolResponse> GetPoolInfoAsync(string poolId, CancellationToken ct, [FromQuery] uint topMinersRange = 24)
+    public async Task<GetPoolResponse> GetPoolInfoAsync(string poolId, CancellationToken ct)
     {
         var pool = GetPool(poolId);
 
@@ -136,17 +128,9 @@ public class PoolApiController : ApiControllerBase
         // enrich
         response.Pool.TotalPaid = await cf.Run(con => statsRepo.GetTotalPoolPaymentsAsync(con, pool.Id, ct));
         response.Pool.TotalBlocks = await cf.Run(con => blocksRepo.GetPoolBlockCountAsync(con, pool.Id, ct));
-        var lastBlockTime = await cf.Run(con => blocksRepo.GetLastPoolBlockTimeAsync(con, pool.Id));
-        response.Pool.LastPoolBlockTime = lastBlockTime;
+        response.Pool.LastPoolBlockTime = await cf.Run(con => blocksRepo.GetLastPoolBlockTimeAsync(con, pool.Id));
 
-        if(lastBlockTime.HasValue)
-        {
-            DateTime startTime = lastBlockTime.Value;
-            var poolEffort = await cf.Run(con => shareRepo.GetEffortBetweenCreatedAsync(con, pool.Id, poolInstance.ShareMultiplier, startTime, clock.Now));
-            response.Pool.PoolEffort = poolEffort.Value;
-        }
-
-        var from = clock.Now.AddHours(-topMinersRange);
+        var from = clock.Now.AddDays(-1);
 
         response.Pool.TopMiners = (await cf.Run(con => statsRepo.PagePoolMinersByHashrateAsync(con, pool.Id, from, 0, 15, ct)))
             .Select(mapper.Map<MinerPerformanceStats>)
@@ -193,14 +177,14 @@ public class PoolApiController : ApiControllerBase
 
     [HttpGet("{poolId}/miners")]
     public async Task<MinerPerformanceStats[]> PagePoolMinersAsync(
-        string poolId, [FromQuery] int page, [FromQuery] int pageSize = 15, [FromQuery] uint topMinersRange = 24)
+        string poolId, [FromQuery] int page, [FromQuery] int pageSize = 15)
     {
         var pool = GetPool(poolId);
         var ct = HttpContext.RequestAborted;
 
         // set range
         var end = clock.Now;
-        var start = end.AddHours(-topMinersRange);
+        var start = end.AddDays(-1);
 
         var miners = (await cf.Run(con => statsRepo.PagePoolMinersByHashrateAsync(con, pool.Id, start, page, pageSize, ct)))
             .Select(mapper.Map<MinerPerformanceStats>)
@@ -374,8 +358,15 @@ public class PoolApiController : ApiControllerBase
             stats = mapper.Map<Responses.MinerStats>(statsResult);
 
             // pre-multiply pending shares to cause less confusion with users
-            if(pool.Template.Family == CoinFamily.Bitcoin)
-                stats.PendingShares *= pool.Template.As<BitcoinTemplate>().ShareMultiplier;
+            switch(pool.Template.Family) {
+                case CoinFamily.Bitcoin:
+                    stats.PendingShares *= pool.Template.As<BitcoinTemplate>().ShareMultiplier;
+                    break;
+                case CoinFamily.Bamboo:
+                    // difficulty of 15 is considered single share
+                    stats.PendingShares /= Math.Pow(2, 15);
+                    break;
+            }
 
             // optional fields
             if(statsResult.LastPayment != null)
@@ -584,9 +575,6 @@ public class PoolApiController : ApiControllerBase
         if(string.IsNullOrEmpty(address))
             throw new ApiException("Invalid or missing miner address", HttpStatusCode.NotFound);
 
-        if(pool.Template.Family == CoinFamily.Ethereum)
-            address = address.ToLower();
-
         var result = await cf.Run(con=> minerRepo.GetSettingsAsync(con, null, pool.Id, address));
 
         if(result == null)
@@ -603,9 +591,6 @@ public class PoolApiController : ApiControllerBase
 
         if(string.IsNullOrEmpty(address))
             throw new ApiException("Invalid or missing miner address", HttpStatusCode.NotFound);
-
-        if(pool.Template.Family == CoinFamily.Ethereum)
-            address = address.ToLower();
 
         if(request?.Settings == null)
             throw new ApiException("Invalid or missing settings", HttpStatusCode.BadRequest);
