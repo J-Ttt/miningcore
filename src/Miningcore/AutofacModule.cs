@@ -171,6 +171,11 @@ public class AutofacModule : Module
         builder.RegisterType<EquihashJobManager>();
         builder.RegisterType<ErgoJobManager>();
 
+        //////////////////////
+        // Bamboo
+
+        builder.RegisterType<BambooJobManager>();
+
         base.Load(builder);
     }
 }
