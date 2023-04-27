@@ -299,6 +299,7 @@ public class PayoutManager : BackgroundService
                     }
                 }
             });
+                
                 var payoutTask = Task.Run(async () =>
             {
                 using var timer = new PeriodicTimer(interval);
