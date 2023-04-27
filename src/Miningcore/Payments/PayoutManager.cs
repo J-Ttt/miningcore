@@ -85,6 +85,9 @@ public class PayoutManager : BackgroundService
         foreach(var pool in pools.Values.ToArray().Where(x => x.Config.Enabled && x.Config.PaymentProcessing.Enabled))
         {
             var poolConfig = pool.Config;
+            
+            var desc1 = processPayouts ? "Payment" : "Block";
+            var desc2 = processPayouts ? "payments" : "blocks";
 
             logger.Info(() => $"Processing {desc2} for pool {poolConfig.Id}");
 
