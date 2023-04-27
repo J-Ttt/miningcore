@@ -80,7 +80,7 @@ public class PayoutManager : BackgroundService
             AttachPool(notification.Pool);
     }
 
-    private async Task ProcessPoolsAsync(CancellationToken ct, pool processPayouts)
+    private async Task ProcessPoolsAsync(CancellationToken ct, bool processPayouts)
     {
         foreach(var pool in pools.Values.ToArray().Where(x => x.Config.Enabled && x.Config.PaymentProcessing.Enabled))
         {
@@ -266,7 +266,7 @@ public class PayoutManager : BackgroundService
 
             // Allow all pools to actually come up before the first payment processing run
             await Task.Delay(initialRunDelay, ct);
-
+            var updateTask = Task.Run(async () =>
             {
             using var timer = new PeriodicTimer(TimeSpan.FromMinutes(3));
                 while(await timer.WaitForNextTickAsync(ct))
