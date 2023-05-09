@@ -17,18 +17,16 @@ public class EthereumConstants
     public const string EthereumStratumVersion = "EthereumStratum/1.0.0";
     public const decimal StaticTransactionFeeReserve = 0.0025m; // in ETH
     public const string BlockTypeUncle = "uncle";
+    public const string BlockTypeBlock = "block";
 
 #if !DEBUG
-        public const int MinPayoutPeerCount = 1;
+    public const int MinPayoutPeerCount = 1;
 #else
     public const int MinPayoutPeerCount = 1;
 #endif
 
     public static readonly Regex ValidAddressPattern = new("^0x[0-9a-fA-F]{40}$", RegexOptions.Compiled);
     public static readonly Regex ZeroHashPattern = new("^0?x?0+$", RegexOptions.Compiled);
-    public static readonly Regex NoncePattern = new("^0x[0-9a-f]{16}$", RegexOptions.Compiled);
-    public static readonly Regex HashPattern = new("^0x[0-9a-f]{64}$", RegexOptions.Compiled);
-    public static readonly Regex WorkerPattern = new("^[0-9a-zA-Z-_]{1,64}$", RegexOptions.Compiled);
 
     public const ulong ByzantiumHardForkHeight = 4370000;
     public const ulong ConstantinopleHardForkHeight = 7280000;
@@ -49,21 +47,37 @@ public class CallistoConstants
     public const decimal TreasuryPercent = 50m;
 }
 
+public class EthOneConstants
+{
+    public const decimal BaseRewardInitial = 2.0m;
+}
+
+public class PinkConstants
+{
+    public const decimal BaseRewardInitial = 1.0m;
+}
+
 public enum EthereumNetworkType
 {
-    Mainnet = 1,
+    Main = 1,
     Ropsten = 3,
     Callisto = 820,
+    MainPow = 10001,
+    EtherOne = 4949,
+    Pink = 10100,
 
     Unknown = -1,
 }
 
 public enum GethChainType
 {
-    Ethereum,
+    Main,
     Ropsten,
     Callisto,
-
+    MainPow = 10001,
+    EtherOne = 4949,
+    Pink = 10100,
+    
     Unknown = -1,
 }
 

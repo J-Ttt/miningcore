@@ -18,6 +18,11 @@
 - POW (proof-of-work) & POS (proof-of-stake) support
 - Detailed per-pool logging to console & filesystem
 - Runs on Linux and Windows
+ 
+ This is a rebase of the original miningcore by oliverw. There will be additional coin support added in the future as well as various fixes and is a work in progress.
+
+ New Coins added so far:
+ PDN Pandanite
 
 ## Support
 
@@ -28,7 +33,7 @@ For general questions visit the [Discussions Area](https://github.com/oliverw/mi
 ## Building on Debian/Ubuntu
 
 ```console
-git clone https://github.com/oliverw/miningcore
+git clone https://github.com/havekhd/miningcore
 cd miningcore
 ```
 
@@ -45,13 +50,17 @@ or
 ```console
 ./build-ubuntu-21.04.sh
 ```
+or
+```console
+./build-ubuntu-22.04.sh
+```
 
 ## Building on Windows
 
 Download and install the [.NET 6 SDK](https://dotnet.microsoft.com/download/dotnet/6.0)
 
 ```dosbatch
-git clone https://github.com/oliverw/miningcore
+git clone https://github.com/havekhd/miningcore-master
 cd miningcore
 build-windows.bat
 ```
@@ -65,8 +74,8 @@ build-windows.bat
 In case you don't want to install any dependencies then you can build the app using the official Microsoft .NET SDK Docker image.
 
 ```console
-git clone https://github.com/oliverw/miningcore
-cd miningcore
+git clone https://github.com/havekhd/miningcore-master
+cd miningcore-master
 ```
 Then build using Docker:
 
@@ -147,12 +156,13 @@ Create a configuration file `config.json` as described [here](https://github.com
 
 ```console
 cd build
-Miningcore -c config.json
+./Miningcore -c config.json
 ```
 
 ## Supported Currencies
 
 Refer to [this file](https://github.com/oliverw/miningcore/blob/master/src/Miningcore/coins.json) for a complete list.
+Pandanite has been added in this version thanks to JT from FFMPool
 
 ## Caveats
 

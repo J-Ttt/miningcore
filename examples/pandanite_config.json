@@ -1,0 +1,191 @@
+{
+    "logging": {
+        "level": "trace",
+        "enableConsoleLog": true,
+        "enableConsoleColors": true,
+        // Log file name (full log) - can be null in which case log events are written to console (stdout)
+        "logFile": "core.log",
+        // Log file name for API-requests - can be null in which case log events are written to either main logFile or >
+        "apiLogFile": "api.log",
+        // Folder to store log file(s)
+        "logBaseDirectory": "/tmp/miningcore/logs",
+        // If enabled, separate log file will be stored for each pool as <pool id>.log
+        // in the above specific folder.
+        "perPoolLogFile": false
+    },
+    "banning": {
+        // "integrated" or "iptables" (linux only - not yet implemented)
+        "manager": "Integrated",
+        "banOnJunkReceive": true,
+        "banOnInvalidShares": true
+    },
+    "notifications": {
+        "enabled": false,
+        "email": {
+            "host": "",
+            "port": 587,
+            "user": "",
+            "password": "",
+            "fromAddress": "",
+            "fromName": ""
+        },
+        "admin": {
+            "enabled": false,
+            "emailAddress": "----YOUR EMAIL HERE----",
+            "notifyBlockFound": false
+        }
+    },
+    // Where to persist shares and blocks to
+    "persistence": {
+        // Persist to postgresql database
+        "postgres": {
+            "host": "127.0.0.1",
+            "port": 5432,
+            "user": "miningcore",
+            "password": "----your psql password here----",
+            "database": "miningcore"
+        }
+    },
+	// Generate payouts for recorded shares and blocks
+    "paymentProcessing": {
+        "enabled": true,
+        // How often to process payouts, in milliseconds
+        "interval": 3600,
+        // Path to a file used to backup shares under emergency conditions, such as
+        // database outage
+        "shareRecoveryFile": "recovered-shares.txt"
+    },
+    // API Settings
+    "api": {
+        "enabled": true,
+        // Binding address (Default: 127.0.0.1)
+        "listenAddress": "0.0.0.0",
+        // Binding port (Default: 4000)
+        "port": 4000,
+        // IP address whitelist for requests to Prometheus Metrics (default 127.0.0.1)
+        "metricsIpWhitelist": [],
+        // Limit rate of requests to API on a per-IP basis
+        "rateLimiting": {
+            "disabled": true, // disable rate-limiting all-together, be careful
+            // override default rate-limit rules, refer to https://github.com/stefanprodan/AspNetCoreRateLimit/wiki/IpR>
+            "rules": [
+                {
+					"Endpoint": "*",
+                    "Period": "1s",
+                    "Limit": 5
+                }
+            ],
+            // List of IP addresses excempt from rate-limiting (default: none)
+            "ipWhitelist": []
+        }
+    },
+    "pools": [
+        // Repeat the following section for multiple coins
+        {
+            // DON'T change the id after a production pool has begun collecting shares!
+            "id": "pandanite",
+            "enabled": true,
+            "coin": "pandanite",
+            // Address to where block rewards are given (pool wallet)
+            "address": "----YOUR POOL WALLET---",
+            //"publicKey": "---YOUR POOL WALLET PUBLIC KEY",
+            //"privateKey": "---YOUR POOL WALLET PRIVATE KEY---",           
+			// Block rewards go to the configured pool wallet address to later be paid out
+            // to miners, except for a percentage that can go to, for examples,
+            // pool operator(s) as pool fees or or to donations address. Addresses or hashed
+            // public keys can be used. Here is an example of rewards going to the main pool
+            // "op"
+			 "rewardRecipients": [
+                {
+                    // Pool wallet
+                    "type": "op",
+                    "address": "----YOUR POOL DEV FEE WALLET DONT USE SAME AS POOL WALLET---",
+                    "percentage": 1.0
+                }
+            ],
+            // How often to poll RPC daemons for new blocks, in milliseconds
+            "blockRefreshInterval": 400,
+            // Some miner apps will consider the pool dead/offline if it doesn't receive
+            // anything new jobs for around a minute, so every time we broadcast jobs,
+            // set a timeout to rebroadcast in this many seconds unless we find a new job.
+            // Set to zero to disable. (Default: 0)
+            "jobRebroadcastTimeout": 30,
+            // Remove workers that haven't been in contact for this many seconds.
+            // Some attackers will create thousands of workers that use up all available
+            // socket connections, usually the workers are zombies and don't submit shares
+            // after connecting. This features detects those and disconnects them.
+            "clientConnectionTimeout": 600,
+            // If a worker is submitting a high threshold of invalid shares, we can
+            // temporarily ban their IP to reduce system/network load.
+			"banning": {
+                "enabled": true,
+                // How many seconds to ban worker for
+                "time": 30,
+                // What percent of invalid shares triggers ban
+                "invalidPercent": 5,
+                // Check invalid percent when this many shares have been submitted
+                "checkThreshold": 5
+            },
+            // Each pool can have as many ports for your miners to connect to as you wish.
+            // Each port can be configured to use its own pool difficulty and variable
+            // difficulty settings. 'varDiff' is optional and will only be used for the ports
+            // you configure it for.
+            "ports": {
+                // Binding port for your miners to connect to
+                "4444": {
+                    // Binding address (Default: 127.0.0.1)
+                    "listenAddress": "0.0.0.0",
+                    // Pool difficulty
+                    "difficulty": 15,
+                    // TLS/SSL configuration
+                    "tls": false,
+                    // Variable difficulty is a feature that will automatically adjust difficulty
+                    // for individual miners based on their hash rate in order to lower
+                    // networking overhead
+					"varDiff": {
+                        // Minimum difficulty
+                        "minDiff": 13,
+                        // Maximum difficulty. Network difficulty will be used if it is lower than
+                        // this. Set to null to disable.
+                        "maxDiff": null,
+                        // Try to get 1 share per this many seconds
+                        "targetTime": 30,
+                        // Check to see if we should retarget every this many seconds
+                        "retargetTime": 90,
+                        // Allow time to very this % from target without retargeting
+                        "variancePercent": 30,
+                        // Do not alter difficulty by more than this during a single retarget in
+                        // either direction
+                        "maxDelta": 5
+                        }
+                    }
+                },
+
+            // Recommended to have at least two daemon instances running in case one drops
+            // out-of-sync or offline. For redundancy, all instances will be polled for
+            // block/transaction updates and be used for submitting blocks. Creating a backup
+            // daemon involves spawning a daemon using the "-datadir=/backup" argument which
+            // creates a new daemon instance with it's own RPC config. For more info on this,
+            // visit: https:// en.bitcoin.it/wiki/Data_directory and
+            // https:// en.bitcoin.it/wiki/Running_bitcoind
+			"daemons": [
+                {
+                    "host": "http://localhost",
+                    "port": 3000
+                }
+            ],
+            // Generate payouts for recorded shares
+            "paymentProcessing": {
+                "enabled": true,
+                // Minimum payment in pool-base-currency (ie. Bitcoin, NOT Satoshis)
+                "minimumPayment": 1,
+                "payoutScheme": "PPLNS",
+                "payoutSchemeConfig": {
+                    "factor": 2.0
+                }
+            }
+        }
+
+        // This section ends here. Add `,` after `}` if this is not the last coin section
+    ]
+}
