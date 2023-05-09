@@ -133,7 +133,7 @@ sudo -u miningcore psql -d miningcore -f miningcore/src/Miningcore/Persistence/P
 ```
 or
 
-``console
+```console
 sudo -u postgres psql -d miningcore -f miningcore/src/Miningcore/Persistence/Postgres/Scripts/createdb.sql
 ```
 
