@@ -1,5 +1,4 @@
 using CircularBuffer;
-using Miningcore.Blockchain.Bamboo;
 using Miningcore.Configuration;
 using Miningcore.Extensions;
 using Miningcore.Mining;
@@ -46,13 +45,13 @@ public static class VarDiffManager
                 var tMax = options.TargetTime + variance;
 
                 // Possible New Diff
-                
+
                 if(ts - ctx.LastRetarget < options.RetargetTime || avg >= tMin && avg <= tMax)
                     return null;
 
                 double newDiff = 0d;
-                
-                if (context is BambooWorkerContext) {
+
+                if (context is PandaniteWorkerContext) {
                     newDiff = Math.Log2((1 << Convert.ToInt32(difficulty)) * options.TargetTime / avg);
                 } else {
                     newDiff = difficulty * options.TargetTime / avg;
@@ -116,7 +115,7 @@ public static class VarDiffManager
 
             double newDiff = 0d;
 
-            if (context is BambooWorkerContext) {
+            if (context is PandaniteWorkerContext) {
                 newDiff = Math.Log2((1 << Convert.ToInt32(difficulty)) * options.TargetTime / avg);
             } else {
                 newDiff = difficulty * options.TargetTime / avg;
@@ -172,5 +171,9 @@ public static class VarDiffManager
             ctx.TimeBuffer = new CircularBuffer<double>(BufferSize);
 
         return true;
+    }
+
+    private class PandaniteWorkerContext : WorkerContextBase
+    {
     }
 }

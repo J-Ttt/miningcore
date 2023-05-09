@@ -30,8 +30,9 @@ public enum CoinFamily
 
     [EnumMember(Value = "ergo")]
     Ergo,
-    [EnumMember(Value = "bamboo")]
-    Bamboo,
+
+    [EnumMember(Value = "Pandanite")]
+    Pandanite,
 }
 
 public abstract partial class CoinTemplate
@@ -134,7 +135,7 @@ public abstract partial class CoinTemplate
         {CoinFamily.Cryptonote, typeof(CryptonoteCoinTemplate)},
         {CoinFamily.Ethereum, typeof(EthereumCoinTemplate)},
         {CoinFamily.Ergo, typeof(ErgoCoinTemplate)},
-        {CoinFamily.Bamboo, typeof(BambooCoinTemplate)},
+        {CoinFamily.Pandanite, typeof(PandaniteCoinTemplate)},
     };
 }
 
@@ -190,6 +191,9 @@ public partial class BitcoinTemplate : CoinTemplate
 
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public bool HasFounderFee { get; set; }
+
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public bool HasMinerFund { get; set; }
 
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     [DefaultValue(1.0d)]
@@ -438,16 +442,34 @@ public partial class CryptonoteCoinTemplate : CoinTemplate
     public ulong AddressPrefix { get; set; }
 
     /// <summary>
+    /// Sub Prefix of a valid sub address
+    /// See: namespace config -> CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX in src/cryptonote_config.h
+    /// </summary>
+    public ulong SubAddressPrefix { get; set; }
+
+    /// <summary>
     /// Prefix of a valid testnet-address
     /// See: namespace config -> CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX in src/cryptonote_config.h
     /// </summary>
     public ulong AddressPrefixTestnet { get; set; }
 
     /// <summary>
+    /// Sub Prefix of a valid testnet-address
+    /// See: namespace config -> CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX in src/cryptonote_config.h
+    /// </summary>
+    public ulong SubAddressPrefixTestnet { get; set; }
+
+    /// <summary>
     /// Prefix of a valid stagenet-address
     /// See: namespace config -> CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX in src/cryptonote_config.h
     /// </summary>
     public ulong AddressPrefixStagenet { get; set; }
+
+    /// <summary>
+    /// Sub Prefix of a valid stagenet-address
+    /// See: namespace config -> CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX in src/cryptonote_config.h
+    /// </summary>
+    public ulong SubAddressPrefixStagenet { get; set; }
 
     /// <summary>
     /// Prefix of a valid integrated address
@@ -493,13 +515,14 @@ public partial class ErgoCoinTemplate : CoinTemplate
 {
 }
 
-public class BambooCoinTemplate : CoinTemplate
+public class PandaniteCoinTemplate : CoinTemplate
 {
     public override string GetAlgorithmName()
     {
         return "pufferfish2bmb";
     }
 }
+
 
 #endregion // Coin Definitions
 
@@ -521,6 +544,7 @@ public partial class ClusterLoggingConfig
     public string ApiLogFile { get; set; }
     public bool PerPoolLogFile { get; set; }
     public string LogBaseDirectory { get; set; }
+    public bool GPDRCompliant { get; set; }
 }
 
 public partial class NetworkEndpointConfig
