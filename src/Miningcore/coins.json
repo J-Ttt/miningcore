@@ -260,14 +260,14 @@
         "explorerAccountLink": "https://axe-explorer.arcpool.com/address/{0}"
     },
 
-    "Pandanite": {
+    "pandanite": {
         "name": "Pandanite",
         "canonicalName": "Pandanite",
         "symbol": "PDN",
-        "family": "Pandanite",
-        "website": "https://www.Pandanitecrypto.io/",
+        "family": "pandanite",
+        "website": "https://www.pandanite.com/",
         "market": "",
-        "twitter": "https://twitter.com/bmb_Pandanite",
+        "twitter": "https://twitter.com/pdn_pandanite",
         "telegram": "",
         "discord": "https://discord.gg/2m9m2cnBk7",
         "coinbaseHasher": {
