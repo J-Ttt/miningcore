@@ -51,9 +51,12 @@ or
 ./build-ubuntu-21.04.sh
 ```
 or
+
 ```console
 ./build-ubuntu-22.04.sh
 ```
+note you may have to use the following before building on 22.04
+```chmod +x build-ubuntu-22.04.sh```
 
 ## Building on Windows
 
@@ -121,8 +124,14 @@ CREATE DATABASE miningcore OWNER miningcore;
 ```
 
 Quit `psql` with \q
+Be sure to go back to your main home directory before doing the rest or it will throw an error that createdb.sql doesn't exist
 
 Import the database schema:
+
+```console
+sudo -u miningcore psql -d miningcore -f miningcore/src/Miningcore/Persistence/Postgres/Scripts/createdb.sql
+```
+or
 
 ```console
 sudo -u postgres psql -d miningcore -f miningcore/src/Miningcore/Persistence/Postgres/Scripts/createdb.sql
@@ -135,7 +144,7 @@ If you are planning to run a Multipool-Cluster, the simple setup might not perfo
 **WARNING**: The following step will delete all recorded shares. Do **NOT** do this on a production pool unless you backup your `shares` table using `pg_backup` first!
 
 ```console
-sudo -u postgres psql -d miningcore -f miningcore/src/Miningcore/Persistence/Postgres/Scripts/createdb_postgresql_11_appendix.sql
+sudo -u miningcore psql -d miningcore -f miningcore/src/Miningcore/Persistence/Postgres/Scripts/createdb_postgresql_11_appendix.sql
 ```
 
 After executing the command, your `shares` table is now a [list-partitioned table](https://www.postgresql.org/docs/11/ddl-partitioning.html) which dramatically improves query performance, since almost all database operations Miningcore performs are scoped to a certain pool.
