@@ -63,11 +63,11 @@ public class PayoutManager : BackgroundService
     private readonly CompositeDisposable disposables = new();
     private SemaphoreSlim _lock = new SemaphoreSlim(1,1);
 
-#if !DEBUG
+    #if !DEBUG
     private static readonly TimeSpan initialRunDelay = TimeSpan.FromMinutes(1);
-#else
+    #else
     private static readonly TimeSpan initialRunDelay = TimeSpan.FromSeconds(15);
-#endif
+    #endif
 
     private void AttachPool(IMiningPool pool)
     {
@@ -85,7 +85,6 @@ public class PayoutManager : BackgroundService
         foreach(var pool in pools.Values.ToArray().Where(x => x.Config.Enabled && x.Config.PaymentProcessing.Enabled))
         {
             var poolConfig = pool.Config;
-
             
             var desc1 = processPayouts ? "Payment" : "Block";
             var desc2 = processPayouts ? "payments" : "blocks";
@@ -107,7 +106,7 @@ public class PayoutManager : BackgroundService
                 var scheme = ctx.ResolveKeyed<IPayoutScheme>(poolConfig.PaymentProcessing.PayoutScheme);
 
                 await UpdatePoolBalancesAsync(pool, poolConfig, handler, scheme, ct);
-            
+
                 if (processPayouts) {
                     await PayoutPoolBalancesAsync(pool, poolConfig, handler, ct);
                 }
@@ -200,7 +199,7 @@ public class PayoutManager : BackgroundService
 
     private async Task PayoutPoolBalancesAsync(IMiningPool pool, PoolConfig config, IPayoutHandler handler, CancellationToken ct)
     {
-    logger.Info(() => $"Processing payments for pool {config.Id}");
+        logger.Info(() => $"Processing payments for pool {config.Id}");
 
         var poolBalancesOverMinimum = await cf.Run(con =>
             balanceRepo.GetPoolBalancesOverThresholdAsync(con, config.Id, config.PaymentProcessing.MinimumPayment));
@@ -249,9 +248,6 @@ public class PayoutManager : BackgroundService
 
         block.Effort = await cf.Run(con =>
             shareRepo.GetEffectiveAccumulatedShareDifficultyBetweenAsync(con, pool.Config.Id, from, to, ct));
-
-        if(block.Effort.HasValue)
-            block.Effort = handler.AdjustBlockEffort(block.Effort.Value);
     }
 
     protected override async Task ExecuteAsync(CancellationToken ct)
@@ -292,7 +288,7 @@ public class PayoutManager : BackgroundService
                     {
                         logger.Error(ex);
                     } 
-
+                    
                     finally 
                     {
                         if (lockTaken) 

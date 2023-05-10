@@ -270,6 +270,11 @@ public class PandanitePayoutHandler : PayoutHandlerBase,
     {
         return difficulty;
     }
-    
+
+    public double AdjustBlockEffort(double effort)
+    {
+        throw new NotImplementedException();
+    }
+
     #endregion // IPayoutHandler
 }
