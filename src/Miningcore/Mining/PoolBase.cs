@@ -379,7 +379,8 @@ Pool Fee:               {(poolConfig.RewardRecipients?.Any() == true ? poolConfi
 ";
 
         logger.Info(() => msg);
- } catch (Exception ex) {
+ } catch(Exception)
+        {
 
 }
     }
