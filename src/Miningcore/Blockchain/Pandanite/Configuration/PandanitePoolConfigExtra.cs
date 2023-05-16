@@ -1,9 +1,9 @@
 using Miningcore.Configuration;
 using Newtonsoft.Json.Linq;
 
-namespace Miningcore.Blockchain.Bamboo.Configuration;
+namespace Miningcore.Blockchain.Pandanite.Configuration;
 
-public class BambooPoolConfigExtra
+public class PandanitePoolConfigExtra
 {
     /// <summary>
     /// 

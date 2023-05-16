@@ -1,8 +1,8 @@
 using Miningcore.Mining;
 
-namespace Miningcore.Blockchain.Bamboo;
+namespace Miningcore.Blockchain.Pandanite;
 
-public class BambooWorkerContext : WorkerContextBase
+public class PandaniteWorkerContext : WorkerContextBase
 {
     /// <summary>
     /// Usually a wallet address

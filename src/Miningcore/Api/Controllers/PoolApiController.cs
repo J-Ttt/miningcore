@@ -362,7 +362,7 @@ public class PoolApiController : ApiControllerBase
                 case CoinFamily.Bitcoin:
                     stats.PendingShares *= pool.Template.As<BitcoinTemplate>().ShareMultiplier;
                     break;
-                case CoinFamily.Bamboo:
+                case CoinFamily.Pandanite:
                     // difficulty of 15 is considered single share
                     stats.PendingShares /= Math.Pow(2, 15);
                     break;

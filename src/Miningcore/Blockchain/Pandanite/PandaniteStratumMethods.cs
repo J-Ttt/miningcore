@@ -1,6 +1,6 @@
-namespace Miningcore.Blockchain.Bamboo;
+namespace Miningcore.Blockchain.Pandanite;
 
-public class BambooStratumMethods
+public class PandaniteStratumMethods
 {
     /// <summary>
     /// Used to subscribe to work from a server, required before all other communication.

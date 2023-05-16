@@ -1,6 +1,6 @@
 using System;
 
-namespace Miningcore.Blockchain.Bamboo {
+namespace Miningcore.Blockchain.Pandanite {
     public class TransactionInfo {
         public string signature { get; set; }
         public string signingKey { get; set; }

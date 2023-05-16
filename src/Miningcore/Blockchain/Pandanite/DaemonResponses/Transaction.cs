@@ -5,7 +5,7 @@ using System.Text;
 using Ed25519;
 using NSec.Cryptography;
 
-namespace Miningcore.Blockchain.Bamboo
+namespace Miningcore.Blockchain.Pandanite
 {
     public class Transaction
     {

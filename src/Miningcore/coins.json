@@ -292,11 +292,11 @@
         "explorerAccountLink": "https://axe-explorer.arcpool.com/address/{0}"
     },
 
-    "bamboo": {
-        "name": "Bamboo",
-        "canonicalName": "Bamboo",
-        "symbol": "BMB",
-        "family": "bamboo",
+    "pandanite": {
+        "name": "Pandanite",
+        "canonicalName": "Pandanite",
+        "symbol": "PDN",
+        "family": "pandanite",
         "website": "https://www.bamboocrypto.io/",
         "market": "",
         "twitter": "https://twitter.com/bmb_bamboo",

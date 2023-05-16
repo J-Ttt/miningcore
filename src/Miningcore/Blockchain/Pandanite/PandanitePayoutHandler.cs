@@ -1,6 +1,6 @@
 using Autofac;
 using AutoMapper;
-using Miningcore.Blockchain.Bamboo.Configuration;
+using Miningcore.Blockchain.Pandanite.Configuration;
 using Miningcore.Configuration;
 using Miningcore.Extensions;
 using Miningcore.Messaging;
@@ -15,13 +15,13 @@ using Miningcore.Util;
 using Newtonsoft.Json;
 using Contract = Miningcore.Contracts.Contract;
 
-namespace Miningcore.Blockchain.Bamboo;
+namespace Miningcore.Blockchain.Pandanite;
 
-[CoinFamily(CoinFamily.Bamboo)]
-public class BambooPayoutHandler : PayoutHandlerBase,
+[CoinFamily(CoinFamily.Pandanite)]
+public class PandanitePayoutHandler : PayoutHandlerBase,
     IPayoutHandler
 {
-    public BambooPayoutHandler(
+    public PandanitePayoutHandler(
         IComponentContext ctx,
         IConnectionFactory cf,
         IMapper mapper,
@@ -41,12 +41,12 @@ public class BambooPayoutHandler : PayoutHandlerBase,
     }
 
     protected readonly IComponentContext ctx;
-    protected IBambooNodeApi Node;
-    protected BambooPoolConfigExtra extraPoolConfig;
-    protected BambooDaemonEndpointConfigExtra extraPoolEndpointConfig;
-    protected BambooPoolPaymentProcessingConfigExtra extraPoolPaymentProcessingConfig;
+    protected IPandaniteNodeApi Node;
+    protected PandanitePoolConfigExtra extraPoolConfig;
+    protected PandaniteDaemonEndpointConfigExtra extraPoolEndpointConfig;
+    protected PandanitePoolPaymentProcessingConfigExtra extraPoolPaymentProcessingConfig;
 
-    protected override string LogCategory => "Bamboo Payout Handler";
+    protected override string LogCategory => "Pandanite Payout Handler";
 
     #region IPayoutHandler
 
@@ -57,16 +57,16 @@ public class BambooPayoutHandler : PayoutHandlerBase,
         poolConfig = pc;
         clusterConfig = cc;
 
-        extraPoolConfig = pc.Extra.SafeExtensionDataAs<BambooPoolConfigExtra>();
-        extraPoolEndpointConfig = pc.Extra.SafeExtensionDataAs<BambooDaemonEndpointConfigExtra>();
-        extraPoolPaymentProcessingConfig = pc.PaymentProcessing.Extra.SafeExtensionDataAs<BambooPoolPaymentProcessingConfigExtra>();
+        extraPoolConfig = pc.Extra.SafeExtensionDataAs<PandanitePoolConfigExtra>();
+        extraPoolEndpointConfig = pc.Extra.SafeExtensionDataAs<PandaniteDaemonEndpointConfigExtra>();
+        extraPoolPaymentProcessingConfig = pc.PaymentProcessing.Extra.SafeExtensionDataAs<PandanitePoolPaymentProcessingConfigExtra>();
 
-        logger = LogUtil.GetPoolScopedLogger(typeof(BambooPayoutHandler), pc);
+        logger = LogUtil.GetPoolScopedLogger(typeof(PandanitePayoutHandler), pc);
 
         // TODO: implement failover??
         var daemon = poolConfig.Daemons.First();
         var httpClient = new HttpClient();
-        Node = new BambooNodeV1Api(httpClient, string.Join(":", daemon.Host, daemon.Port));
+        Node = new PandaniteNodeV1Api(httpClient, string.Join(":", daemon.Host, daemon.Port));
 
         return Task.CompletedTask;
     }

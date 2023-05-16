@@ -17,12 +17,12 @@ using Miningcore.Time;
 using Newtonsoft.Json;
 using static Miningcore.Util.ActionUtils;
 
-namespace Miningcore.Blockchain.Bamboo;
+namespace Miningcore.Blockchain.Pandanite;
 
-[CoinFamily(CoinFamily.Bamboo)]
-public class BambooPool : PoolBase
+[CoinFamily(CoinFamily.Pandanite)]
+public class PandanitePool : PoolBase
 {
-    public BambooPool(IComponentContext ctx,
+    public PandanitePool(IComponentContext ctx,
         JsonSerializerSettings serializerSettings,
         IConnectionFactory cf,
         IMinerRepository minerRepository,
@@ -42,8 +42,8 @@ public class BambooPool : PoolBase
     }
 
     protected object currentJobParams;
-    protected BambooJobManager manager;
-    private BambooCoinTemplate coin;
+    protected PandaniteJobManager manager;
+    private PandaniteCoinTemplate coin;
 
     public IMinerRepository MinerRepository { get; }
 
@@ -54,15 +54,15 @@ public class BambooPool : PoolBase
         if(request.Id == null)
             throw new StratumException(StratumError.MinusOne, "missing request id");
 
-        var context = connection.ContextAs<BambooWorkerContext>();
+        var context = connection.ContextAs<PandaniteWorkerContext>();
         var requestParams = request.ParamsAs<string[]>();
 
         var data = new object[]
         {
             new object[]
             {
-                new object[] { BambooStratumMethods.SetDifficulty, connection.ConnectionId },
-                new object[] { BambooStratumMethods.MiningNotify, connection.ConnectionId }
+                new object[] { PandaniteStratumMethods.SetDifficulty, connection.ConnectionId },
+                new object[] { PandaniteStratumMethods.MiningNotify, connection.ConnectionId }
             }
         }
         .Concat(manager.GetSubscriberData(connection))
@@ -86,8 +86,8 @@ public class BambooPool : PoolBase
         }
 
         // send intial update
-        await connection.NotifyAsync(BambooStratumMethods.SetDifficulty, new object[] { context.Difficulty });
-        await connection.NotifyAsync(BambooStratumMethods.MiningNotify, currentJobParams);
+        await connection.NotifyAsync(PandaniteStratumMethods.SetDifficulty, new object[] { context.Difficulty });
+        await connection.NotifyAsync(PandaniteStratumMethods.MiningNotify, currentJobParams);
     }
 
     protected virtual async Task OnAuthorizeAsync(StratumConnection connection, Timestamped<JsonRpcRequest> tsRequest, CancellationToken ct)
@@ -97,7 +97,7 @@ public class BambooPool : PoolBase
         if(request.Id == null)
             throw new StratumException(StratumError.MinusOne, "missing request id");
 
-        var context = connection.ContextAs<BambooWorkerContext>();
+        var context = connection.ContextAs<PandaniteWorkerContext>();
         var requestParams = request.ParamsAs<string[]>();
         var workerValue = requestParams?.Length > 0 ? requestParams[0] : null;
         var password = requestParams?.Length > 1 ? requestParams[1] : null;
@@ -134,7 +134,7 @@ public class BambooPool : PoolBase
 
                 logger.Info(() => $"[{connection.ConnectionId}] Setting static difficulty of {staticDiff.Value}");
 
-                await connection.NotifyAsync(BambooStratumMethods.SetDifficulty, new object[] { context.Difficulty });
+                await connection.NotifyAsync(PandaniteStratumMethods.SetDifficulty, new object[] { context.Difficulty });
             }
 
             /* NOT SECURE
@@ -152,7 +152,7 @@ public class BambooPool : PoolBase
             });
 
             if (minPayout.HasValue && minPayout > Config.PaymentProcessing.MinimumPayment) {
-                logger.Info(() => $"[{connection.ConnectionId}] Setting minimum payout to {minPayout} BMB");
+                logger.Info(() => $"[{connection.ConnectionId}] Setting minimum payout to {minPayout} PDN");
             }*/
         }
 
@@ -175,7 +175,7 @@ public class BambooPool : PoolBase
     protected virtual async Task OnSubmitAsync(StratumConnection connection, Timestamped<JsonRpcRequest> tsRequest, CancellationToken ct)
     {
         var request = tsRequest.Value;
-        var context = connection.ContextAs<BambooWorkerContext>();
+        var context = connection.ContextAs<PandaniteWorkerContext>();
 
         try
         {
@@ -310,14 +310,14 @@ public class BambooPool : PoolBase
 
         await Guard(() => ForEachMinerAsync(async (connection, ct) =>
         {
-            var context = connection.ContextAs<BambooWorkerContext>();
+            var context = connection.ContextAs<PandaniteWorkerContext>();
 
             // varDiff: if the client has a pending difficulty change, apply it now
             if(context.ApplyPendingDifficulty())
-                await connection.NotifyAsync(BambooStratumMethods.SetDifficulty, new object[] { context.Difficulty });
+                await connection.NotifyAsync(PandaniteStratumMethods.SetDifficulty, new object[] { context.Difficulty });
 
             // send job
-            await connection.NotifyAsync(BambooStratumMethods.MiningNotify, currentJobParams);
+            await connection.NotifyAsync(PandaniteStratumMethods.MiningNotify, currentJobParams);
         }));
     }
 
@@ -330,14 +330,14 @@ public class BambooPool : PoolBase
 
     public override void Configure(PoolConfig pc, ClusterConfig cc)
     {
-        coin = pc.Template.As<BambooCoinTemplate>();
+        coin = pc.Template.As<PandaniteCoinTemplate>();
 
         base.Configure(pc, cc);
     }
 
     protected override async Task SetupJobManager(CancellationToken ct)
     {
-        manager = ctx.Resolve<BambooJobManager>();
+        manager = ctx.Resolve<PandaniteJobManager>();
 
         manager.Configure(poolConfig, clusterConfig);
 
@@ -368,7 +368,7 @@ public class BambooPool : PoolBase
 
     protected override WorkerContextBase CreateWorkerContext()
     {
-        return new BambooWorkerContext();
+        return new PandaniteWorkerContext();
     }
 
     protected override async Task OnRequestAsync(StratumConnection connection,
@@ -380,36 +380,36 @@ public class BambooPool : PoolBase
         {
             switch(request.Method)
             {
-                case BambooStratumMethods.Subscribe:
+                case PandaniteStratumMethods.Subscribe:
                     await OnSubscribeAsync(connection, tsRequest);
                     break;
 
-                case BambooStratumMethods.Authorize:
+                case PandaniteStratumMethods.Authorize:
                     await OnAuthorizeAsync(connection, tsRequest, ct);
                     break;
 
-                case BambooStratumMethods.SubmitShare:
+                case PandaniteStratumMethods.SubmitShare:
                     await OnSubmitAsync(connection, tsRequest, ct);
                     break;
 
-                case BambooStratumMethods.SuggestDifficulty:
+                case PandaniteStratumMethods.SuggestDifficulty:
                     await OnSuggestDifficultyAsync(connection, tsRequest);
                     break;
 
-                case BambooStratumMethods.MiningConfigure:
+                case PandaniteStratumMethods.MiningConfigure:
                     await OnConfigureMiningAsync(connection, tsRequest);
                     // ignored
                     break;
 
-                case BambooStratumMethods.ExtraNonceSubscribe:
+                case PandaniteStratumMethods.ExtraNonceSubscribe:
                     await connection.RespondAsync(true, request.Id);
                     break;
 
-                case BambooStratumMethods.GetTransactions:
+                case PandaniteStratumMethods.GetTransactions:
                     // ignored
                     break;
 
-                case BambooStratumMethods.MiningMultiVersion:
+                case PandaniteStratumMethods.MiningMultiVersion:
                     // ignored
                     break;
 
@@ -433,8 +433,8 @@ public class BambooPool : PoolBase
 
         if(connection.Context.ApplyPendingDifficulty())
         {
-            await connection.NotifyAsync(BambooStratumMethods.SetDifficulty, new object[] { connection.Context.Difficulty });
-            await connection.NotifyAsync(BambooStratumMethods.MiningNotify, currentJobParams);
+            await connection.NotifyAsync(PandaniteStratumMethods.SetDifficulty, new object[] { connection.Context.Difficulty });
+            await connection.NotifyAsync(PandaniteStratumMethods.MiningNotify, currentJobParams);
         }
     }
 

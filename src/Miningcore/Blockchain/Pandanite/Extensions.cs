@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 
-namespace Miningcore.Blockchain.Bamboo 
+namespace Miningcore.Blockchain.Pandanite 
 {
     public static class Extensions 
     {

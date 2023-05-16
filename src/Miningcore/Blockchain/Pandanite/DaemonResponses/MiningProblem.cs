@@ -1,4 +1,4 @@
-namespace Miningcore.Blockchain.Bamboo
+namespace Miningcore.Blockchain.Pandanite
 {
     public class MiningProblem
     {

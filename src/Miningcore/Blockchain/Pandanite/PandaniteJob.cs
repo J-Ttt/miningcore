@@ -10,9 +10,9 @@ using Miningcore.Contracts;
 using Miningcore.Stratum;
 using NBitcoin;
 
-namespace Miningcore.Blockchain.Bamboo
+namespace Miningcore.Blockchain.Pandanite
 {
-    public class BambooJob
+    public class PandaniteJob
     {
         public uint Id { get; set; }
         public string JobId { get; set; }
@@ -50,7 +50,7 @@ namespace Miningcore.Blockchain.Bamboo
             if(!RegisterSubmit(nonce))
                 throw new StratumException(StratumError.DuplicateShare, "duplicate share");
 
-            var context = worker.ContextAs<BambooWorkerContext>();
+            var context = worker.ContextAs<PandaniteWorkerContext>();
 
             Span<byte> concat = new byte[64];
             Span<byte> hash = new byte[119] { 
