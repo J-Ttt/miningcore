@@ -143,16 +143,16 @@
     </Target>
 
     <ItemGroup>
-        <Content Include="Blockchain/Bamboo/pufferfish2.dll">
+        <Content Include="Blockchain/Pandanite/pufferfish2.dll">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
-        <Content Include="Blockchain/Bamboo/pufferfish2.so">
+        <Content Include="Blockchain/Pandanite/pufferfish2.so">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
-        <Content Include="Blockchain/Bamboo/sign.dll">
+        <Content Include="Blockchain/Pandanite/sign.dll">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
-        <Content Include="Blockchain/Bamboo/sign.so">
+        <Content Include="Blockchain/Pandanite/sign.so">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
     </ItemGroup>

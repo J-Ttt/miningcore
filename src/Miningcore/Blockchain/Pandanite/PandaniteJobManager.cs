@@ -8,11 +8,11 @@ using Miningcore.Stratum;
 using Miningcore.Time;
 using NLog;
 
-namespace Miningcore.Blockchain.Bamboo;
+namespace Miningcore.Blockchain.Pandanite;
 
-public class BambooJobManager : BambooJobManagerBase<BambooJob>
+public class PandaniteJobManager : PandaniteJobManagerBase<PandaniteJob>
 {
-    public BambooJobManager(
+    public PandaniteJobManager(
         IComponentContext ctx,
         IMasterClock clock,
         IMessageBus messageBus) :
@@ -21,7 +21,7 @@ public class BambooJobManager : BambooJobManagerBase<BambooJob>
 
     }
 
-    private BambooCoinTemplate coin;
+    private PandaniteCoinTemplate coin;
 
     protected override void PostChainIdentifyConfigure()
     {
@@ -62,7 +62,7 @@ public class BambooJobManager : BambooJobManagerBase<BambooJob>
                     return (false, forceUpdate);
                 }
 
-                // https://github.com/bamboo-crypto/bamboo/blob/55645977b3c7d98ababa9d467304182ccd76cfd1/src/core/constants.hpp#L20
+                // https://github.com/pandanite-crypto/pandanite/blob/55645977b3c7d98ababa9d467304182ccd76cfd1/src/core/constants.hpp#L20
                 const int maxTransactions = 25000;
 
                 var transactions = txs.data.OrderByDescending(x => x.fee).Take(maxTransactions - 1).ToList();
@@ -93,7 +93,7 @@ public class BambooJobManager : BambooJobManagerBase<BambooJob>
 
                     var nonce = sha256.ComputeHash(stream);
 
-                    job = new BambooJob
+                    job = new PandaniteJob
                     {
                         Id = problem.data.chainLength + 1,
                         JobId = nonce.AsString(),
@@ -173,7 +173,7 @@ public class BambooJobManager : BambooJobManagerBase<BambooJob>
 
     public override void Configure(PoolConfig pc, ClusterConfig cc)
     {
-        coin = pc.Template.As<BambooCoinTemplate>();
+        coin = pc.Template.As<PandaniteCoinTemplate>();
         base.Configure(pc, cc);
     }
 
@@ -181,7 +181,7 @@ public class BambooJobManager : BambooJobManagerBase<BambooJob>
     {
         Contract.RequiresNonNull(worker);
 
-        var context = worker.ContextAs<BambooWorkerContext>();
+        var context = worker.ContextAs<PandaniteWorkerContext>();
 
         // TODO is this required? maybe...
         // assign unique ExtraNonce1 to worker (miner)
@@ -206,7 +206,7 @@ public class BambooJobManager : BambooJobManagerBase<BambooJob>
         if(submission is not object[] submitParams)
             throw new StratumException(StratumError.Other, "invalid params");
 
-        var context = worker.ContextAs<BambooWorkerContext>();
+        var context = worker.ContextAs<PandaniteWorkerContext>();
 
         // extract params
         var workerValue = (submitParams[0] as string)?.Trim();
@@ -216,7 +216,7 @@ public class BambooJobManager : BambooJobManagerBase<BambooJob>
         if(string.IsNullOrEmpty(workerValue))
             throw new StratumException(StratumError.Other, "missing or invalid workername");
 
-        BambooJob job;
+        PandaniteJob job;
 
         lock(jobLock)
         {

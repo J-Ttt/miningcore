@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Miningcore.Blockchain.Bamboo
+namespace Miningcore.Blockchain.Pandanite
 {
-    public interface IBambooNodeApi
+    public interface IPandaniteNodeApi
     {
         Task<(bool success, uint block)> GetBlock();
         Task<(bool success, MiningProblem data)> GetMiningProblem();

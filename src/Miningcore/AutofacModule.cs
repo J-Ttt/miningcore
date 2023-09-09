@@ -23,7 +23,7 @@ using Microsoft.IO;
 using Miningcore.Blockchain.Ergo;
 using Miningcore.Nicehash;
 using Miningcore.Pushover;
-using Miningcore.Blockchain.Bamboo;
+using Miningcore.Blockchain.Pandanite;
 
 namespace Miningcore;
 
@@ -172,9 +172,9 @@ public class AutofacModule : Module
         builder.RegisterType<ErgoJobManager>();
 
         //////////////////////
-        // Bamboo
+        // Pandanite
 
-        builder.RegisterType<BambooJobManager>();
+        builder.RegisterType<PandaniteJobManager>();
 
         base.Load(builder);
     }

@@ -228,7 +228,7 @@ public class StatsRecorder : BackgroundService
                         stats.Hashrate = minerHashrate;
                         stats.Worker = item.Worker;
 
-                        if (pool.Config.Template.Family == CoinFamily.Bamboo) {
+                        if (pool.Config.Template.Family == CoinFamily.Pandanite) {
                             stats.SharesPerSecond = item.Sum / minerHashTimeFrame / Math.Pow(2, 15);
                         } else {
                             stats.SharesPerSecond = Math.Round(item.Count / minerHashTimeFrame, 3);

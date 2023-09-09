@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Linq;
 
-namespace Miningcore.Blockchain.Bamboo
+namespace Miningcore.Blockchain.Pandanite
 {
     public class MerkleTree
     {

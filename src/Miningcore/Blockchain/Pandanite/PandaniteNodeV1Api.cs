@@ -1,14 +1,14 @@
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 
-namespace Miningcore.Blockchain.Bamboo
+namespace Miningcore.Blockchain.Pandanite
 {
-    public class BambooNodeV1Api : IBambooNodeApi
+    public class PandaniteNodeV1Api : IPandaniteNodeApi
     {
         private HttpClient HttpClient { get; }
         private string Url { get; }
 
-        public BambooNodeV1Api(HttpClient httpClient, string url)
+        public PandaniteNodeV1Api(HttpClient httpClient, string url)
         {
             if (string.IsNullOrEmpty(url))
             {

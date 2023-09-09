@@ -1,3 +1,7 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MS-PL license.
+// See the LICENSE file in the project root for more information.
+
 using Autofac;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -362,7 +366,7 @@ public class PoolApiController : ApiControllerBase
                 case CoinFamily.Bitcoin:
                     stats.PendingShares *= pool.Template.As<BitcoinTemplate>().ShareMultiplier;
                     break;
-                case CoinFamily.Bamboo:
+                case CoinFamily.Pandanite:
                     // difficulty of 15 is considered single share
                     stats.PendingShares /= Math.Pow(2, 15);
                     break;

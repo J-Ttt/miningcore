@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Reactive;
 using System.Reactive.Linq;
 using Autofac;
-using Miningcore.Blockchain.Bamboo.Configuration;
+using Miningcore.Blockchain.Pandanite.Configuration;
 using Miningcore.Configuration;
 using Miningcore.Contracts;
 using Miningcore.Extensions;
@@ -13,13 +13,13 @@ using Miningcore.Time;
 using NBitcoin;
 using static Miningcore.Util.ActionUtils;
 
-namespace Miningcore.Blockchain.Bamboo;
+namespace Miningcore.Blockchain.Pandanite;
 
-public abstract class BambooJobManagerBase<TJob> : JobManagerBase<TJob>
+public abstract class PandaniteJobManagerBase<TJob> : JobManagerBase<TJob>
 {
-    protected IBambooNodeApi Node;
+    protected IPandaniteNodeApi Node;
 
-    protected BambooJobManagerBase(
+    protected PandaniteJobManagerBase(
         IComponentContext ctx,
         IMasterClock clock,
         IMessageBus messageBus) :
@@ -38,8 +38,8 @@ public abstract class BambooJobManagerBase<TJob> : JobManagerBase<TJob>
     protected const int ExtranonceBytes = 4;
     protected int maxActiveJobs = 4;
     protected bool hasLegacyDaemon;
-    protected BambooPoolConfigExtra extraPoolConfig;
-    protected BambooPoolPaymentProcessingConfigExtra extraPoolPaymentProcessingConfig;
+    protected PandanitePoolConfigExtra extraPoolConfig;
+    protected PandanitePoolPaymentProcessingConfigExtra extraPoolPaymentProcessingConfig;
     protected readonly List<TJob> validJobs = new();
     protected DateTime? lastJobRebroadcast;
     protected bool hasSubmitBlockMethod;
@@ -129,7 +129,7 @@ public abstract class BambooJobManagerBase<TJob> : JobManagerBase<TJob>
 
     protected record SubmitResult(bool Accepted, string CoinbaseTx);
 
-    protected async Task<SubmitResult> SubmitBlockAsync(IBambooNodeApi api, Share share, byte[] block, CancellationToken ct)
+    protected async Task<SubmitResult> SubmitBlockAsync(IPandaniteNodeApi api, Share share, byte[] block, CancellationToken ct)
     {
         using var stream = new MemoryStream(block);
 
@@ -170,7 +170,7 @@ public abstract class BambooJobManagerBase<TJob> : JobManagerBase<TJob>
         // TODO: implement failover??
         var daemon = poolConfig.Daemons.First();
         var httpClient = new HttpClient();
-        Node = new BambooNodeV1Api(httpClient, string.Join(":", daemon.Host, daemon.Port));
+        Node = new PandaniteNodeV1Api(httpClient, string.Join(":", daemon.Host, daemon.Port));
     }
 
     protected override async Task<bool> AreDaemonsHealthyAsync(CancellationToken ct)
@@ -323,7 +323,7 @@ public abstract class BambooJobManagerBase<TJob> : JobManagerBase<TJob>
 
     public override void Configure(PoolConfig pc, ClusterConfig cc)
     {
-        extraPoolConfig = pc.Extra.SafeExtensionDataAs<BambooPoolConfigExtra>();
+        extraPoolConfig = pc.Extra.SafeExtensionDataAs<PandanitePoolConfigExtra>();
         base.Configure(pc, cc);
     }
 
